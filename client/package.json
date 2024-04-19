@@ -8,7 +8,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "jest",
-    "build:azure": "npx expo export"
+    "build:azure": "npx expo export && rm -rf ./.next/cache"
   },
   "dependencies": {
     "@ant-design/icons": "^5.3.0",
