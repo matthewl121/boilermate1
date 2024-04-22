@@ -18,8 +18,13 @@ from firebase_admin import credentials
 def getPath():
     #return Path(r'/mnt/c/Users/mli00/Desktop/Purdue/ECE 49595O/Boilermate-b3fcd-firebase-adminsdk-rwh4i-30e3b04f5c.json') # subject to change
     # return Path(r'C:\Users\andre\Documents\boilermate.json') # subject to change
-    home = os.environ["FIREBASE_API_KEY"]
-    return Path(home)
+    api_key = os.getenv("FIREBASE_API_KEY")
+    if api_key:
+        with open(Path.home() / "secrets" / "Boilermate-b3fcd-firebase-adminsdk-rwh4i-30e3b04f5c.json", "w") as f:
+          f.write(api_key)  
+        return Path.home()
+    else:
+        return None
 
 path = getPath()
 cred = credentials.Certificate(path)
