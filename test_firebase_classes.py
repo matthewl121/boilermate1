@@ -8,9 +8,7 @@ def getPath():
 
 path = getPath()
 cred = credentials.Certificate(path)
-firebase_admin.initialize_app(cred, {
-    'databaseURL': 'https://boilermate-b3fcd-default-rtdb.firebaseio.com'
-})
+firebase_admin.get_app()
 
 def save_to_firebase(department, class_name, topic):
         try:
