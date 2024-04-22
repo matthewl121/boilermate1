@@ -12,21 +12,14 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
-import base64
 import firebase_admin
 from firebase_admin import credentials
 
 def getPath():
     #return Path(r'/mnt/c/Users/mli00/Desktop/Purdue/ECE 49595O/Boilermate-b3fcd-firebase-adminsdk-rwh4i-30e3b04f5c.json') # subject to change
     # return Path(r'C:\Users\andre\Documents\boilermate.json') # subject to change
-    BOILERMATE_KEY = os.environ["bm_secret"]
-    bm_key_encoded = base64.b64decode
-    if api_key:
-        with open(Path.home() / "secrets" / "Boilermate-b3fcd-firebase-adminsdk-rwh4i-30e3b04f5c.json", "w") as f:
-          f.write(api_key)  
-        return Path.home()
-    else:
-        return None
+    BOILERMATE_KEY = os.getenv("FIREBASE_API_KEY")
+    return Path(BOILERMATE_KEY)
 
 path = getPath()
 cred = credentials.Certificate(path)

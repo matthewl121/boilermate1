@@ -35,10 +35,8 @@ jobs:
         LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}
     - name: Test printing secret
       run: cat $HOME/secrets/Boilermate-b3fcd-firebase-adminsdk-rwh4i-30e3b04f5c.json
-    - name: Test print
-      run: |
-        import base64
-        with open()
     - name: Run Tests
       run: |
         python backend/manage.py test
+      env: 
+        FIREBASE_API_KEY: ${{'$HOME/secrets/Boilermate-b3fcd-firebase-adminsdk-rwh4i-30e3b04f5c.json'}}
