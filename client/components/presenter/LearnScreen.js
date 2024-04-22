@@ -30,9 +30,9 @@ const LearnScreen = ({ route }) => {
     const handleHomeNav = () => navigate.navigate('Home');
     const handleClassSelectNav = () => navigate.navigate('ClassSelect');
     const handleSettingsNav = () => navigate.navigate('Settings');
+    const handleChatNav = () => navigate.navigate('Chat');
 
-    const renderItem = ({ item }) => {
-        const url = selectedTab === 'videos' ? `https://www.youtube.com/watch?v=${item.videoId}` : item.url;
+    const renderItemVideo = ({ item }) => {
         const thumbnailUrl = selectedTab === 'videos' ? `https://img.youtube.com/vi/${item.videoId}/0.jpg` : item.thumbnailUrl;
 
         return (
@@ -41,6 +41,16 @@ const LearnScreen = ({ route }) => {
                     source={{ uri: thumbnailUrl }}
                     style={styles.thumbnail}
                 />
+                <Text style={styles.title}>{item.title}</Text>
+            </TouchableOpacity>
+        );
+    };
+
+    const renderItemWebsite = ({ item }) => {
+        console.log("Website URL:", item.website_url);
+    
+        return (
+            <TouchableOpacity onPress={() => Linking.openURL(item.website_url)} style={styles.itemContainerWebsite}>
                 <Text style={styles.title}>{item.title}</Text>
             </TouchableOpacity>
         );
@@ -64,7 +74,7 @@ const LearnScreen = ({ route }) => {
             {selectedTab === 'videos' && (
                 <FlatList
                     data={videos}
-                    renderItem={renderItem}
+                    renderItem={renderItemVideo}
                     keyExtractor={item => item.videoId}
                     contentContainerStyle={{ padding: 20, alignItems: 'flex-start' }}
                 />
@@ -72,7 +82,7 @@ const LearnScreen = ({ route }) => {
             {selectedTab === 'websites' && (
                 <FlatList
                     data={websites}
-                    renderItem={renderItem}
+                    renderItem={renderItemWebsite}
                     keyExtractor={item => item.id}  // Make sure websites have a unique 'id'
                     contentContainerStyle={{ padding: 0, alignItems: 'flex-start' }}
                 />
@@ -85,7 +95,7 @@ const LearnScreen = ({ route }) => {
                 <TouchableOpacity style={styles.navButton} onPress={handleClassSelectNav}>
                     <SettingsIcon name="school-outline" size={28} color="#C28E0C" />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.navButton} onPress={handleClassSelectNav}>
+                <TouchableOpacity style={styles.navButton} onPress={handleChatNav}>
                     <SettingsIcon name="chatbubble-ellipses-outline" size={28} color="#C28E0C" />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.navButton} onPress={handleSettingsNav}>
