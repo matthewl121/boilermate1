@@ -18,9 +18,7 @@ from firebase_admin import credentials
 def getPath():
     #return Path(r'/mnt/c/Users/mli00/Desktop/Purdue/ECE 49595O/Boilermate-b3fcd-firebase-adminsdk-rwh4i-30e3b04f5c.json') # subject to change
     # return Path(r'C:\Users\andre\Documents\boilermate.json') # subject to change
-    BOILERMATE_KEY = os.getenv("FIREBASE_API_KEY")
-    print(BOILERMATE_KEY)
-    return Path(BOILERMATE_KEY)
+    return Path(r'/home/runner/secrets/Boilermate-b3fcd-firebase-adminsdk-rwh4i-30e3b04f5c.json')
 
 path = getPath()
 cred = credentials.Certificate(path)
