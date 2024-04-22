@@ -1,26 +1,76 @@
-from django.http import HttpResponse
 import requests
-from backend.settings import getPath
-from pathlib import Path
 from django.http import JsonResponse
-from django.shortcuts import render
 from firebase_admin import db
-from django.views import View
-from rest_framework.response import Response
 from rest_framework.views import APIView
 from firebase_api.models import User
 from datetime import datetime, timedelta
 from django.conf import settings
-from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
 import re
 import pytz
 import random
-import openai
 from openai import OpenAI
 from django.utils.decorators import method_decorator
 from django_ratelimit.decorators import ratelimit
 from django_ratelimit.exceptions import Ratelimited
+
+class UpdateRatings(APIView):
+    def __init__(self):
+        pass
+    
+    @classmethod
+    def update_rating_videos(self, topic, video_id, thumbs_up, thumbs_down):
+        try:
+            ref = db.reference(f'Videos/{topic}/{video_id}')
+            curr_rating = ref.get().get('rating')
+            updated_rating = curr_rating
+            if thumbs_up == True:
+                updated_rating += 1
+            elif thumbs_down == True:
+                updated_rating -= 1
+            ref.update({'rating': updated_rating})
+            return True, "Rating updated successfully"
+        except Exception as e:
+            return False, str(e)
+    
+    @classmethod
+    def update_rating_web(self, topic, web_url, thumbs_up, thumbs_down):
+        try:
+            ref = db.reference(f'Websites/{topic}/{web_url}')
+            curr_rating = ref.get().get('rating')
+            updated_rating = curr_rating
+            if thumbs_up == True:
+                updated_rating += 1
+            elif thumbs_down == True:
+                updated_rating -= 1
+            ref.update({'rating': updated_rating})
+            return True, "Rating updated successfully"
+        except Exception as e:
+            return False, str(e) 
+    
+    @method_decorator(ratelimit(key='ip', rate='3/m', block=True), name= 'FIREUPDATE') 
+    def post(self, request):
+        try:
+            topic = request.GET.get('topic')
+            videos = request.data.get('videos', [])
+            webs = request.data.get('webites', [])
+            for video in videos:
+                video_id = video.get('videoId')
+                thumbs_up = video.get('thumbs_up', False)
+                thumbs_down = video.get('thumbs_down', False)
+                success, message = self.update_rating_videos(topic, video_id, thumbs_up, thumbs_down)
+                if not success:
+                    return JsonResponse({'Error': message}, status=500)
+            for web in webs:
+                web_url = web.get('website_url')
+                thumbs_up = web.get('thumbs_up', False)
+                thumbs_down = web.get('thumbs_down', False)
+                success, message = self.update_rating_web(topic, web_url, thumbs_up, thumbs_down)
+                if not success:
+                    return JsonResponse({'Error': message}, status=500)
+            return JsonResponse({'message': 'Ratings updated successfully'}, status=200)
+        except Exception as e:
+            return JsonResponse({'Error': str(e)}, status=400)
+    
 
 # Create your views here.
 class UserHandler(APIView):
@@ -129,9 +179,9 @@ class UserHandler(APIView):
 
 class YoutubeVideoView(APIView):
     @classmethod
-    def scrape_google_websites(self, topic, num_results):
+    def scrape_google_websites(self, topic, class_name, num_results):
         try:
-            query = f"{topic}"
+            query = f"{topic} in {class_name}"
             api_key = 'AIzaSyBCWCmdRqhjI6LcZdwNtQEKbBqgbl18eqU'
             cx = 'b73affeb0258a40aa'
             url = f"https://www.googleapis.com/customsearch/v1?key={api_key}&cx={cx}&q={query}&num={num_results}"
@@ -241,7 +291,7 @@ class YoutubeVideoView(APIView):
                     return JsonResponse({'Error:': message}, status=400)
             ref = db.reference(f'Websites/{topic_id}')
             if ref.get() is None:
-                worked, message = self.scrape_google_websites(topic_id, 10)
+                worked, message = self.scrape_google_websites(topic_id, class_name, 10)
                 if worked == False:
                     return JsonResponse({'Error': message}, status=400)
             websites, message, worked = self.fetch_google_websites(topic_id, 5)
@@ -249,7 +299,7 @@ class YoutubeVideoView(APIView):
                 return JsonResponse({'Error': message}, status=500)
             videos, message, worked = self.fetch_youtube_videos(topic_id, 20)
             if worked == False:
-                return JsonResponse({'Error': message},status=500)
+                return JsonResponse({'Error': message}, status=500)
             return JsonResponse({'videos': videos, 'websites': websites}, status=201)
         except Ratelimited:
             return JsonResponse({'Error': 'Rate limit exceeded'}, status=429)
@@ -281,7 +331,8 @@ class FirebaseHandler(APIView):
                     else:
                         return True, 'Topic already in firebase db'
         except Exception as e:
-            return False, str(e)        
+            return False, str(e)     
+       
     @method_decorator(ratelimit(key='ip', rate='10/m', block=True), name= 'FIREPOST') 
     def post(self, request):
         try:

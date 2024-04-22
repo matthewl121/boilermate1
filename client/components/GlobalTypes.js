@@ -62,10 +62,10 @@ export const styles = StyleSheet.create({
             justifyContent: 'space-around',
             alignItems: 'center',
             backgroundColor: '#f2f2f2',
-            height: 60,
+            height: 70,
             width: '100%',
             position: 'absolute',
-            bottom: 10,
+            bottom: 0,
         },
         navButton: {
             justifyContent: 'center',
@@ -81,14 +81,59 @@ export const styles = StyleSheet.create({
             alignItems: 'center',
             backgroundColor: '#f2f2f2',
             height: 60,
-            width: 200,
+            width: 240,
             bottom: 10,
         },
         inputSelect: {
             flex: 1,
             margin: 2,
           },
+        // Add these styles to your styles.js or wherever you manage styles
+        thumbnail: {
+            width: 300,
+            height: 168,
+            borderRadius: 6 // Optional: for rounded corners
+        },
+        title: {
+            color: 'blue',
+            textDecorationLine: 'underline',
+            marginVertical: 8,
+            flexWrap: 'wrap'
+        },
+        itemContainer: {
+            flexDirection: 'column',
+            alignItems: 'center',
+            width: 300,              // Adjust width according to your layout needs
+            marginVertical: 10,      // Space between items vertically
+            paddingHorizontal: 10
+        },
+        tabSelector: {
+            flexDirection: 'row', // Lays out the tabs in a row
+            justifyContent: 'center', // Centers the tabs in the container
+            paddingVertical: 10, // Vertical padding around the tabs
+            backgroundColor: '#f8f8f8', // Background color of the tab bar
+            borderBottomWidth: 1, // Adds a subtle line to the bottom of the tab bar
+            borderBottomColor: '#e1e1e1' // Color of the bottom border
+        },
 
+        tabButton: {
+            flex: 1, // Each button will take equal space
+            alignItems: 'center', // Centers content horizontally within each tab
+            paddingVertical: 10, // Vertical padding for touch area
+        },
 
+        tabButtonActive: {
+            borderBottomWidth: 3, // Highlights the active tab with a thicker bottom border
+            borderBottomColor: '#C28E0C', // Color of the active tab indicator
+            fontWeight: 'bold' // Makes the text of the active tab bold
+        },
+
+        tabText: {
+            fontSize: 16, // Size of the text within tabs
+            color: '#333', // Color of the text
+            fontWeight: 'normal' // Normal text weight for inactive tabs
+        }
+
+        
 })
 
